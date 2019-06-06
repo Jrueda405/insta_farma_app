@@ -1,11 +1,13 @@
 import 'dart:async';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:vibration/vibration.dart';
+
+import 'package:flutter_text_to_speech/flutter_text_to_speech.dart';
+import 'package:flutter/services.dart';
 
 class Notice extends StatefulWidget{
 
@@ -15,17 +17,12 @@ class Notice extends StatefulWidget{
 enum TtsState { playing, stopped }
 
 class _NoticeState extends State<Notice>{
-  FlutterTts flutterTts;
-  String language;
-  String voice;
+
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0, color: Colors.black);
   VideoPlayerController _videoPlayerController1;
   ChewieController _chewieController;
-  TtsState ttsState = TtsState.stopped;
 
-  get isPlaying => ttsState == TtsState.playing;
-  get isStopped => ttsState == TtsState.stopped;
-
+  VoiceController controller;
   Widget _vista;
   @override
   void initState() {
@@ -43,33 +40,12 @@ class _NoticeState extends State<Notice>{
       looping: true,
     );
     _vista=_vistaTexto();
-    initTts();
-  }
 
-  initTts() async{
-    flutterTts = FlutterTts();
-
-    List<dynamic> languages = await flutterTts.getLanguages;
-    for(var i=0;i<languages.length;i++){
-    }
-    flutterTts.setStartHandler(() {
-      setState(() {
-        ttsState = TtsState.playing;
-      });
+    controller = FlutterTextToSpeech.instance.voiceController();
+    controller.init().then((_) {
+      controller.setLanguage('es-US');
+      controller.speak('Acuda a su médico tratante, se encontró que hay una interacción entre los medicamentos');
     });
-
-    flutterTts.setCompletionHandler(() {
-      setState(() {
-        ttsState = TtsState.stopped;
-      });
-    });
-
-    flutterTts.setErrorHandler((msg) {
-      setState(() {
-        ttsState = TtsState.stopped;
-      });
-    });
-    flutterTts.setLanguage("es-US");
   }
 
   void startVibrator() async {
@@ -79,15 +55,6 @@ class _NoticeState extends State<Notice>{
       }
     });
 
-  }
-  Future _speak() async{
-    var result = await flutterTts.speak("Acuda a su médico tratante, se encontró que hay una interacción entre los medicamentos");
-    if (result == 1) setState(() => ttsState = TtsState.playing);
-  }
-
-  Future _stop() async {
-    var result = await flutterTts.stop();
-    if (result == 1) setState(() => ttsState = TtsState.stopped);
   }
 
   @override
@@ -104,7 +71,7 @@ class _NoticeState extends State<Notice>{
     super.dispose();
     _videoPlayerController1.dispose();
     _chewieController.dispose();
-    flutterTts.stop();
+    controller.stop();
   }
 
   Widget _vistaTexto(){
@@ -137,7 +104,7 @@ class _NoticeState extends State<Notice>{
                           children: <Widget>[
                             GestureDetector(
                               onTap: (){
-                                this._speak();
+                                controller.speak('Acuda a su médico tratante, se encontró que hay una interacción entre los medicamentos');
                               }
                               ,child: Icon(Icons.volume_up,color: Colors.white,size: 45,),
 
