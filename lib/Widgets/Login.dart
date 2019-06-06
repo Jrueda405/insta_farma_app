@@ -27,10 +27,13 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
   SharedPreferences prefs;
   String _username;
   String _id="00000000000000000000";
+  int indexlang=0;
   @override
   void initState() {
     super.initState();
-    instantiateShared();
+    instantiateShared().whenComplete((){
+      indexlang= prefs.getInt('poslanguage') ?? 4;
+    });
     //print(widget.medicamentos.length);
     _loginButtonController = new AnimationController(
         duration: new Duration(milliseconds: 3000), vsync: this);
@@ -77,7 +80,7 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
                 prefs.setString('username', control_user.text);
                 prefs.setString('password', control_password.text);
                 prefs.setBool('isAuth', true);
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainContent(idUser: _id,languagePos: null)));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainContent(idUser: _id,languagePos: indexlang)));
               }else{
                 Fluttertoast.showToast(
                     msg: "Datos erroneos",
@@ -97,7 +100,7 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
                 prefs.setString('username', _username);
                 prefs.setString('password', control_password.text);
                 prefs.setBool('isAuth', true);
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainContent(idUser: control_user.text,languagePos: null)));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainContent(idUser: control_user.text,languagePos: indexlang)));
               }else{
                 Fluttertoast.showToast(
                     msg: "Datos erroneos",

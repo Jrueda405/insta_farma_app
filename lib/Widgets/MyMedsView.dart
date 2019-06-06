@@ -15,6 +15,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:sensors/sensors.dart';
+import 'package:shake/shake.dart';
+
 
 
 class MyMedsView extends StatefulWidget{
@@ -74,6 +77,9 @@ class _MyMedsViewState extends State<MyMedsView>{
         }
       });
 
+    });
+    ShakeDetector.autoStart(onPhoneShake: () {
+      IterateOverMedsArray();
     });
 
   }
@@ -210,60 +216,60 @@ class _MyMedsViewState extends State<MyMedsView>{
   Widget _buildList() {
 
 
-        return ListView.separated(
-          separatorBuilder: (context, index)=> Divider(
-            color: Colors.black,
-          ),
-          itemCount: my_meds.length,shrinkWrap: true,itemBuilder: (BuildContext context,int pos){
-          Medicamento _medicamentoActual=my_meds[pos];
-          return new ListTile(
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                GestureDetector(
-                  child: CircleAvatar(
-                    foregroundColor: Colors.white,
-                    child: Icon(MdiIcons.delete),
-                    backgroundColor: Colors.red,
-                  ),
-                  onTap: (){
-                    _showDialogRemoveMed(pos);
-                  },
-                )
+    return ListView.separated(
+      separatorBuilder: (context, index)=> Divider(
+        color: Colors.black,
+      ),
+      itemCount: my_meds.length,shrinkWrap: true,itemBuilder: (BuildContext context,int pos){
+      Medicamento _medicamentoActual=my_meds[pos];
+      return new ListTile(
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            GestureDetector(
+              child: CircleAvatar(
+                foregroundColor: Colors.white,
+                child: Icon(MdiIcons.delete),
+                backgroundColor: Colors.red,
+              ),
+              onTap: (){
+                _showDialogRemoveMed(pos);
+              },
+            )
 
-              ],
-            ),
-            title: Padding(padding: EdgeInsets.only(left: 5),child: Text(_medicamentoActual.Nombre,style: TextStyle(fontWeight: FontWeight.normal,fontSize: 24,color: Colors.black)),),
-            onLongPress: (){
-              IterateOverMedsArray().then((e){
-                if(e==true){
-                  navigate_2Notice();
-                }
-              });
-            },
-            onTap: (){
-              if(_medicamentoActual.Compuestos.isEmpty==false){
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>
-                      InformacionMedicamento(medicamento: _medicamentoActual,)),
-                );
-
-              }else{
-                //print("is null");
-                Fluttertoast.showToast(
-                    msg: "No hay datos suficientes",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.BOTTOM,
-                    timeInSecForIos: 1,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                    fontSize: 16.0);
-              }
-
-            },
-          );
+          ],
+        ),
+        title: Padding(padding: EdgeInsets.only(left: 5),child: Text(_medicamentoActual.Nombre,style: TextStyle(fontWeight: FontWeight.normal,fontSize: 24,color: Colors.black)),),
+        onLongPress: (){
+          IterateOverMedsArray().then((e){
+            if(e==true){
+              navigate_2Notice();
+            }
+          });
         },
+        onTap: (){
+          if(_medicamentoActual.Compuestos.isEmpty==false){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  InformacionMedicamento(medicamento: _medicamentoActual,)),
+            );
+
+          }else{
+            //print("is null");
+            Fluttertoast.showToast(
+                msg: "No hay datos suficientes",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIos: 1,
+                backgroundColor: Colors.black,
+                textColor: Colors.white,
+                fontSize: 16.0);
+          }
+
+        },
+      );
+    },
     );
   }
   void _showDialogRemoveMed(int pos) {
@@ -349,6 +355,7 @@ class _MyMedsViewState extends State<MyMedsView>{
     print("estoy verificando si hay interacciones");
     bool interact=false;
     for(int i=0;i<my_meds.length-1;i++){
+      print(i);
       Medicamento m1=my_meds[i];
       for(int j=i+1;j<my_meds.length;j++){
         Medicamento m2=my_meds[j];

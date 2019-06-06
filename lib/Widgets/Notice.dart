@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
+import 'package:vibration/vibration.dart';
 
 class Notice extends StatefulWidget{
 
@@ -30,6 +30,7 @@ class _NoticeState extends State<Notice>{
   @override
   void initState() {
     super.initState();
+    this.startVibrator();
     _videoPlayerController1 = VideoPlayerController.asset('assets/videos/notice.mp4',
       );
     _chewieController = ChewieController(
@@ -37,7 +38,7 @@ class _NoticeState extends State<Notice>{
       aspectRatio: 4 / 3,
       allowMuting: true,
       allowFullScreen: false,
-      autoPlay: false,
+      autoPlay: true,
       showControls: true,
       looping: true,
     );
@@ -71,6 +72,14 @@ class _NoticeState extends State<Notice>{
     flutterTts.setLanguage("es-US");
   }
 
+  void startVibrator() async {
+    Vibration.hasVibrator().then((valor){
+      if(valor){
+        Vibration.vibrate(pattern: [500, 1000, 500,1000]);
+      }
+    });
+
+  }
   Future _speak() async{
     var result = await flutterTts.speak("Acuda a su médico tratante, se encontró que hay una interacción entre los medicamentos");
     if (result == 1) setState(() => ttsState = TtsState.playing);
