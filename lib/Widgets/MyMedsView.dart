@@ -15,7 +15,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:sensors/sensors.dart';
 import 'package:shake/shake.dart';
 
 
@@ -49,6 +48,7 @@ class _MyMedsViewState extends State<MyMedsView>{
   bool showFab=false;
   bool isLoading=true;
   final number = new ValueNotifier(0);
+  ShakeDetector detector;
   @override
   void initState() {
     super.initState();
@@ -78,9 +78,17 @@ class _MyMedsViewState extends State<MyMedsView>{
       });
 
     });
-    ShakeDetector.autoStart(onPhoneShake: () {
-      IterateOverMedsArray();
-    });
+    detector = ShakeDetector.waitForStart(
+        onPhoneShake: () {
+          IterateOverMedsArray().then((e){
+            if(e==true){
+              navigate_2Notice();
+            }
+          });
+        }
+    );
+
+    detector.startListening();
 
   }
   Future fetchMeds(String idUser) async {
@@ -240,13 +248,6 @@ class _MyMedsViewState extends State<MyMedsView>{
           ],
         ),
         title: Padding(padding: EdgeInsets.only(left: 5),child: Text(_medicamentoActual.Nombre,style: TextStyle(fontWeight: FontWeight.normal,fontSize: 24,color: Colors.black)),),
-        onLongPress: (){
-          IterateOverMedsArray().then((e){
-            if(e==true){
-              navigate_2Notice();
-            }
-          });
-        },
         onTap: (){
           if(_medicamentoActual.Compuestos.isEmpty==false){
             Navigator.push(
@@ -347,15 +348,12 @@ class _MyMedsViewState extends State<MyMedsView>{
   void dispose() {
     super.dispose();
     subscription.cancel();
-    setState(() {
-      widget.showIcon=false;
-    });
+    detector.stopListening();
   }
   Future<bool> IterateOverMedsArray()async{
     print("estoy verificando si hay interacciones");
     bool interact=false;
     for(int i=0;i<my_meds.length-1;i++){
-      print(i);
       Medicamento m1=my_meds[i];
       for(int j=i+1;j<my_meds.length;j++){
         Medicamento m2=my_meds[j];
@@ -400,15 +398,5 @@ class _MyMedsViewState extends State<MyMedsView>{
       //persistiran aqui
     }
 
-  }
-  _onStartScroll(ScrollMetrics metrics) {
-    setState(() {
-      showFab=false;
-    });
-  }
-  _onEndScroll(ScrollMetrics metrics) {
-    setState(() {
-      showFab=true;
-    });
   }
 }
