@@ -17,8 +17,6 @@ import 'package:dio/dio.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shake/shake.dart';
 
-
-
 class MyMedsView extends StatefulWidget{
   /*
   List<Medicamento> my_meds;
@@ -49,9 +47,11 @@ class _MyMedsViewState extends State<MyMedsView>{
   bool isLoading=true;
   final number = new ValueNotifier(0);
   ShakeDetector detector;
+  bool didShow=false;
   @override
   void initState() {
     super.initState();
+    showFab=false;
     idUser=widget.idUser;
     check();
     subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
@@ -80,11 +80,14 @@ class _MyMedsViewState extends State<MyMedsView>{
     });
     detector = ShakeDetector.waitForStart(
         onPhoneShake: () {
-          IterateOverMedsArray().then((e){
-            if(e==true){
-              navigate_2Notice();
-            }
-          });
+          if(didShow==false){
+            IterateOverMedsArray().then((e){
+              if(e==true){
+                navigate_2Notice();
+              }
+            });
+          }
+
         }
     );
 
@@ -216,13 +219,15 @@ class _MyMedsViewState extends State<MyMedsView>{
   }
   void navigate_2Notice(){
     //print("Long "+my_meds.length.toString());
+    setState(() {
+      didShow=true;
+    });
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => Notice()),
     );
   }
   Widget _buildList() {
-
 
     return ListView.separated(
       separatorBuilder: (context, index)=> Divider(
