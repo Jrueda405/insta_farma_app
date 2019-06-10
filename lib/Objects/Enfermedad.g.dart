@@ -7,11 +7,11 @@ part of 'Enfermedad.dart';
 // **************************************************************************
 
 Enfermedad _$EnfermedadFromJson(Map<String, dynamic> json) {
-  return Enfermedad(json['id'] as String, json['cuerpo'] as String,
+  return Enfermedad(json['id'] as String, json['nombre'] as String,
       );
 }
 
 Map<String, dynamic> _$EnfermedadToJson(Enfermedad instance) => <String, dynamic>{
       'id': instance.idEnfermedad,
-      'enfermedad': instance.enfermedad,
+      'nombre': instance.nombre,
     };

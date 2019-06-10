@@ -29,7 +29,7 @@ class VistaMedicamentos extends StatefulWidget {
   @override
   _VistaMedicamentosState createState() => new _VistaMedicamentosState();
 }
-class _VistaMedicamentosState extends State<VistaMedicamentos> {
+class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKeepAliveClientMixin<VistaMedicamentos>{
   final TextEditingController _filter = new TextEditingController();
   String _searchText = "";
   Widget _searchIcon = new GestureDetector(child:new Icon(Icons.search));
@@ -50,6 +50,10 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> {
   List<PrincipioActivo> pacs;
   int languagePos;
   String idUser;
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   initState() {
     super.initState();
@@ -185,7 +189,7 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> {
     }else if(medicamentosfiltrados.length<1){
       medicamentosfiltrados=medicamentos;
     }
-    if (!(_searchText.isEmpty)) {
+    if ((_searchText.isNotEmpty)) {
       List<Medicamento> tempList = new List<Medicamento>();
       for (int i = 0; i < medicamentosfiltrados.length; i++) {
         if (medicamentosfiltrados[i].Nombre.toString().toLowerCase().contains(_searchText.toLowerCase())) {
@@ -510,13 +514,15 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> {
 
   }
   Future fetchMeds() async {
+    Map<String, dynamic> body = {
+      'id': idUser,
+    };
     setState(() {
       isLoading = true;
     });
-    final response =
-    await http.get(Strings.url+"/GetMeds.php");
+    Response response = await Dio().post(Strings.url+"/ValidateUsername.php",data:body, options: new Options(contentType:ContentType.parse("application/x-www-form-urlencoded")));
     if (response.statusCode == 200) {
-      List<Medicamento> list = (json.decode(response.body) as List)
+      List<Medicamento> list = (json.decode(response.data) as List)
           .map((data) => new Medicamento.fromJson(data))
           .toList();
       setState(() {

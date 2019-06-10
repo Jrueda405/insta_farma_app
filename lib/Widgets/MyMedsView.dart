@@ -17,6 +17,7 @@ import 'package:dio/dio.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shake/shake.dart';
 
+
 class MyMedsView extends StatefulWidget{
   /*
   List<Medicamento> my_meds;
@@ -32,7 +33,7 @@ class MyMedsView extends StatefulWidget{
   _MyMedsViewState createState()=>_MyMedsViewState();
 
 }
-class _MyMedsViewState extends State<MyMedsView>{
+class _MyMedsViewState extends State<MyMedsView> with AutomaticKeepAliveClientMixin<MyMedsView>{
   String barcode = "";
   SharedPreferences prefs;
   bool isOnline;
@@ -48,6 +49,11 @@ class _MyMedsViewState extends State<MyMedsView>{
   final number = new ValueNotifier(0);
   ShakeDetector detector;
   bool didShow=false;
+  bool _recordaragitar=true;
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
@@ -76,7 +82,9 @@ class _MyMedsViewState extends State<MyMedsView>{
           fetchMeds(idUser);
         }
       });
-
+      setState(() {
+        _recordaragitar=prefs.getBool('recordar_agitar')??true;
+      });
     });
     detector = ShakeDetector.waitForStart(
         onPhoneShake: () {
@@ -92,7 +100,16 @@ class _MyMedsViewState extends State<MyMedsView>{
     );
 
     detector.startListening();
-
+  }
+  void showToast(){
+    Fluttertoast.showToast(
+        msg: "Agita el dispositivo para comprobar si hay interaccion",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
   Future fetchMeds(String idUser) async {
     setState(() {
@@ -158,6 +175,15 @@ class _MyMedsViewState extends State<MyMedsView>{
       });
     }
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if(_recordaragitar==true){
+      showToast();
+    }
+  }
+
   void persist_my_meds() async{
     final String membershipKey = 'jsonmymeds';
     await prefs.setString(membershipKey, json.encode(my_meds));
@@ -197,7 +223,6 @@ class _MyMedsViewState extends State<MyMedsView>{
       resizeToAvoidBottomPadding: false,
     );
   }
-
 
   Future scan() async {
     try {

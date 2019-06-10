@@ -1,11 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_farma_app/Objects/Enfermedad.dart';
 import 'package:insta_farma_app/Strings/Strings.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class Enfermedades extends StatefulWidget{
 
@@ -21,15 +23,15 @@ class EnfermedadesState extends State<Enfermedades>{
 
   List<Enfermedad> enfermedades_filtradas;
   List<Enfermedad> mis_enfermedades;
-  //SharedPreferences prefs;
-  bool isLoading=false;
+  SharedPreferences prefs;
+  bool isLoading=true;
+  String idUser;
   @override
   void initState() {
     super.initState();
-    enfermedades_filtradas=new List<Enfermedad>();
     mis_enfermedades=new List<Enfermedad>();
     //listener
-    _filter.addListener(() {
+    /*_filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
           _searchText = "";
@@ -48,29 +50,35 @@ class EnfermedadesState extends State<Enfermedades>{
           } ,);
         });
       }
+    });*/
+    instantiateShared().whenComplete((){
+      setState(() {
+        idUser=prefs.getString('idUser') ?? "";
+      });
+      this.fetchMisEnfermedades();
     });
 
-    this.fetchMisEnfermedades();
 
+  }
+  Future<bool> instantiateShared() async{
+    prefs = await SharedPreferences.getInstance();
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Emfermedades'),),
-      body:
-      Column(
+      body: !isLoading? Column(
         children: <Widget>[
-          Padding(padding: EdgeInsets.all(10),child: new TextField(
-            controller: _filter,
-            decoration: InputDecoration(
-                contentPadding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
-                hintText: "Enfermedad",
-                prefixIcon: _searchIcon,
-                border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))),
-          ),),
-          _buildList(),
+          _buildList()
+        ],
+      ):
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Center(child: CircularProgressIndicator(),)
         ],
       ),
     );
@@ -82,41 +90,19 @@ class EnfermedadesState extends State<Enfermedades>{
     super.reassemble();
   }
   Widget _buildList() {
-
-    if (!(_searchText.isEmpty)) {
-      List<Enfermedad> tempList = new List<Enfermedad>();
-      for (int i = 0; i < enfermedades_filtradas.length; i++) {
-        if (enfermedades_filtradas[i].enfermedad.toString().toLowerCase().contains(_searchText.toLowerCase())) {
-          tempList.add(enfermedades_filtradas[i]);
-        }
-      }
-      enfermedades_filtradas = tempList;
-    }else{
-      enfermedades_filtradas=new List();
-    }
     return ListView.separated(
       separatorBuilder: (context, index)=> Divider(
         color: Colors.black,
       )
-      ,itemCount: mis_enfermedades == null ? 0 : enfermedades_filtradas.length,
+      ,itemCount: mis_enfermedades.length,
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
-        Enfermedad med=enfermedades_filtradas[index];
+        Enfermedad enfermedad=mis_enfermedades[index];
         return new ListTile(
-          title: Padding(padding: EdgeInsets.only(left: 5),child: Text(med.enfermedad,style: TextStyle(fontWeight: FontWeight.normal,fontSize: 24,color: Colors.black)),),
+          title: Padding(padding: EdgeInsets.only(left: 5),child: Text(enfermedad.nombre,style: TextStyle(fontWeight: FontWeight.normal,fontSize: 24,color: Colors.black)),),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              GestureDetector(
-                child: CircleAvatar(
-                  foregroundColor: Colors.white,
-                  child: Icon(MdiIcons.plus),
-                  backgroundColor: Colors.amber,
-                ),
-                onTap: (){
-
-                },
-              )
 
             ],
           ),
@@ -126,13 +112,13 @@ class EnfermedadesState extends State<Enfermedades>{
     );
   }
   Future fetchMisEnfermedades() async{
-    setState(() {
-      isLoading = true;
-    });
-    final response =
-    await http.get(Strings.url+"/GetEnfermedades.php");
+    Map<String, dynamic> body = {
+      'id': idUser,
+    };
+    Response response = await Dio().post(Strings.url+"/GetEnfermedades.php",data:body, options: new Options(contentType:ContentType.parse("application/x-www-form-urlencoded")));
+    print("llego enfermedad: "+response.data);
     if (response.statusCode == 200) {
-      List<Enfermedad> list = (json.decode(response.body) as List)
+      List<Enfermedad> list = (json.decode(response.data) as List)
           .map((data) => new Enfermedad.fromJson(data))
           .toList();
       setState(() {
