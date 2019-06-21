@@ -61,7 +61,11 @@ class _NoticeState extends State<Notice>{
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red[400],
-      body: _vista
+      body: SafeArea(child: _vista,
+        bottom: true,
+        left: true,
+        right: true,
+        top: true,)
       ,resizeToAvoidBottomPadding: false,
     );
   }

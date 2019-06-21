@@ -38,7 +38,7 @@ class UserInformation extends StatefulWidget{
           key: key,
           floatingActionButton: _status ? _getEditIcon() : new Container(),
           appBar: AppBar(title: Text('Perfil'),backgroundColor: Colores.green1,),
-          body: !isLoading? Container(
+          body: SafeArea(child: !isLoading? Container(
             color: Colors.white,
             child: new ListView(
               children: <Widget>[
@@ -228,7 +228,12 @@ class UserInformation extends StatefulWidget{
 
               ],
             ),
-          ): Center(child: CircularProgressIndicator(),)
+          ): Center(child: CircularProgressIndicator(),),
+            bottom: true,
+            left: true,
+            right: true,
+            top: true,
+          )
       );
     }
 

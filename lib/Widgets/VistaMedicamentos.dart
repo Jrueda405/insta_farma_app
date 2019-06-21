@@ -146,7 +146,9 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKee
 
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+
+      body: SafeArea(
+        child: Container(
           child: !isLoading? Column(
             children: <Widget>[
               Padding(padding: EdgeInsets.all(10),child: new TextField(
@@ -156,14 +158,14 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKee
                     hintText: "Nombre del medicamento",
                     prefixIcon: _searchIcon,
                     suffixIcon:  GestureDetector(
-                        onTap: (){
-                          if(_speechRecognitionAvailable && !_isListening){
-                            start();
-                          }else{
-                            activateSpeechRecognizer();
-                          }
+                      onTap: (){
+                        if(_speechRecognitionAvailable && !_isListening){
+                          start();
+                        }else{
+                          activateSpeechRecognizer();
+                        }
 
-                        },child: fabIcon,
+                      },child: fabIcon,
                     ),
                     border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))),
@@ -174,6 +176,11 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKee
               ),
             ],
           ): Center(child: CircularProgressIndicator(),),
+        ),
+        bottom: true,
+        left: true,
+        right: true,
+        top: true,
       ),
       resizeToAvoidBottomPadding: false,
     );
@@ -377,9 +384,8 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKee
         Medicamento m2=my_meds[j];
         if(Medicamento.validarInteraccionMedicamentosa(m1, m2, pacs)){
           //debo postear
-          RegistrarInteraccion(idUser,m1.Codigo,m2.Codigo);
           interact=true;
-          return interact;
+          RegistrarInteraccion(idUser,m1.Codigo,m2.Codigo);
         }
       }
     }
@@ -390,9 +396,8 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKee
       for(int j=i+1;j<my_meds.length;j++){
         Medicamento m2=my_meds[j];
         if(Medicamento.validarInteraccionMedicamentosa(m2, m1, pacs)){
-          RegistrarInteraccion(idUser,m1.Codigo,m2.Codigo);
           interact=true;
-          return interact;
+          RegistrarInteraccion(idUser,m1.Codigo,m2.Codigo);
         }
       }
     }
@@ -514,15 +519,14 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKee
 
   }
   Future fetchMeds() async {
-    Map<String, dynamic> body = {
-      'id': idUser,
-    };
     setState(() {
       isLoading = true;
     });
-    Response response = await Dio().post(Strings.url+"/ValidateUsername.php",data:body, options: new Options(contentType:ContentType.parse("application/x-www-form-urlencoded")));
+    final response =
+    await http.get(Strings.url+"/GetMeds.php");
+    print('llego: '+response.body);
     if (response.statusCode == 200) {
-      List<Medicamento> list = (json.decode(response.data) as List)
+      List<Medicamento> list = (json.decode(response.body) as List)
           .map((data) => new Medicamento.fromJson(data))
           .toList();
       setState(() {

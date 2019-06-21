@@ -1,3 +1,3 @@
 class Strings {
-  static String url = "http://www.ruedadifusion.com/JP/InstaFarma";
+  static String url = "http://www.amcadena.com/InstaFarma";
 }

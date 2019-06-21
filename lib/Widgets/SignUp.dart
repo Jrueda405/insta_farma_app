@@ -123,10 +123,10 @@ class _signUpState extends State<SignUp> with TickerProviderStateMixin{
                   prefs.setString('username', control_user.text);
                   prefs.setString('password', control_password.text);
                   prefs.setBool('isAuth', true);
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainContent(idUser: s,languagePos: null,)));
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainContent(idUser: s,languagePos: 4,)));
                 }else{
                   Fluttertoast.showToast(
-                      msg: "Error",
+                      msg: "Error ",
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.BOTTOM,
                       timeInSecForIos: 1,

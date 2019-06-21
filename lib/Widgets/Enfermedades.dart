@@ -18,8 +18,7 @@ class Enfermedades extends StatefulWidget{
 
 class EnfermedadesState extends State<Enfermedades>{
   final TextEditingController _filter = new TextEditingController();
-  String _searchText = "";
-  Widget _searchIcon = new GestureDetector(child:new Icon(Icons.search));
+
 
   List<Enfermedad> enfermedades_filtradas;
   List<Enfermedad> mis_enfermedades;
@@ -69,7 +68,7 @@ class EnfermedadesState extends State<Enfermedades>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Emfermedades'),),
-      body: !isLoading? Column(
+      body: SafeArea(child: !isLoading? Column(
         children: <Widget>[
           _buildList()
         ],
@@ -80,6 +79,11 @@ class EnfermedadesState extends State<Enfermedades>{
         children: <Widget>[
           Center(child: CircularProgressIndicator(),)
         ],
+      ),
+        bottom: true,
+        left: true,
+        right: true,
+        top: true,
       ),
     );
   }

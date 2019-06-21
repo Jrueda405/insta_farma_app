@@ -69,13 +69,18 @@ class _MainContentState extends State<MainContent> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar:(_buildBar(context)),
-      body: new TabBarView(
+      body: SafeArea(child: new TabBarView(
         children: <Widget>[
           MyMedsView(idUser: idUser,key: key,),
           VistaMedicamentos(idUser: idUser,languagePos: languagePos,),
           NewsView(),
         ],
         controller: _tabController,
+      ),
+        bottom: true,
+        left: true,
+        right: true,
+        top: true,
       ),
       resizeToAvoidBottomPadding: false,
     );

@@ -211,14 +211,20 @@ class _MyMedsViewState extends State<MyMedsView> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: !isLoading?Column(
-          children: <Widget>[
-            new Expanded(child: _buildList(),
-              flex:10,
-            ),
-          ],
-        ): CircularProgressIndicator(),
+      body: SafeArea(
+        child: Center(
+          child: !isLoading?Column(
+            children: <Widget>[
+              new Expanded(child: _buildList(),
+                flex:10,
+              ),
+            ],
+          ): CircularProgressIndicator(),
+        ),
+        bottom: true,
+        left: true,
+        right: true,
+        top: true,
       ),
       resizeToAvoidBottomPadding: false,
     );
@@ -391,7 +397,6 @@ class _MyMedsViewState extends State<MyMedsView> with AutomaticKeepAliveClientMi
           //debo postear
           //RegistrarInteraccion(idUser,m1.Codigo,m2.Codigo);
           interact=true;
-          return interact;
         }
       }
     }
@@ -404,7 +409,6 @@ class _MyMedsViewState extends State<MyMedsView> with AutomaticKeepAliveClientMi
         if(Medicamento.validarInteraccionMedicamentosa(m2, m1, pacs)){
           //RegistrarInteraccion(idUser,m1.Codigo,m2.Codigo);
           interact=true;
-          return interact;
         }
       }
     }

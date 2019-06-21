@@ -26,7 +26,11 @@ class _stateNews extends State<NewsView>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildList(),
+      body: SafeArea(child: _buildList(),
+        bottom: true,
+        left: true,
+        right: true,
+        top: true,),
     );
   }
   Future _fetchNews()async {
