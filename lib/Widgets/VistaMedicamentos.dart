@@ -72,7 +72,6 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKee
     instantiateShared().whenComplete((){
       getPACSFromShared().whenComplete((){
         if(pacs==null || pacs.length<1){
-
           fetchPacs();
         }
       });
@@ -91,9 +90,15 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKee
           isOnline=true;
         });
       } else if (result == ConnectivityResult.wifi) {
-        isOnline=true;
+        setState(() {
+          isOnline=true;
+        });
+      }else if(result==ConnectivityResult.none){
+        setState(() {
+          isOnline=false;
+        });
       }
-      isOnline=false;
+
     });
     instantiateShared().whenComplete((){
       setState(() {
@@ -445,10 +450,14 @@ class _VistaMedicamentosState extends State<VistaMedicamentos> with AutomaticKee
         //print('hay conexion');
       });
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      isOnline=true;
+      setState(() {
+        isOnline=true;
+      });
       //print('hay conexion');
     } else if (connectivityResult == ConnectivityResult.none) {
-      isOnline=false;
+      setState(() {
+        isOnline=false;
+      });
       //print('hay conexion');
     }
   }

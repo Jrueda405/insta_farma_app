@@ -67,7 +67,7 @@ class EnfermedadesState extends State<Enfermedades>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Emfermedades'),),
+      appBar: AppBar(title: Text('Enfermedades'),),
       body: SafeArea(child: !isLoading? Column(
         children: <Widget>[
           _buildList()

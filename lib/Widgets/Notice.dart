@@ -51,7 +51,7 @@ class _NoticeState extends State<Notice>{
   void startVibrator() async {
     Vibration.hasVibrator().then((valor){
       if(valor){
-        Vibration.vibrate(pattern: [500, 1000, 500,1000]);
+        Vibration.vibrate(pattern: [500, 2000, 500,2000,500,2000]);
       }
     });
 

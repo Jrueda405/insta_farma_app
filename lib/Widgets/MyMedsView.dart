@@ -66,9 +66,14 @@ class _MyMedsViewState extends State<MyMedsView> with AutomaticKeepAliveClientMi
           isOnline=true;
         });
       } else if (result == ConnectivityResult.wifi) {
-        isOnline=true;
+        setState(() {
+          isOnline=true;
+        });
+      }else if(result==ConnectivityResult.none){
+        setState(() {
+          isOnline=false;
+        });
       }
-      isOnline=false;
 
     });
     this.instantiateShared().whenComplete((){
@@ -372,10 +377,14 @@ class _MyMedsViewState extends State<MyMedsView> with AutomaticKeepAliveClientMi
         //print('hay conexion');
       });
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      isOnline=true;
+      setState(() {
+        isOnline=true;
+      });
       //print('hay conexion');
     } else if (connectivityResult == ConnectivityResult.none) {
-      isOnline=false;
+      setState(() {
+        isOnline=false;
+      });
       //print('hay conexion');
     }
   }

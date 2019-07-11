@@ -47,9 +47,10 @@ class _signUpState extends State<SignUp> with TickerProviderStateMixin{
       await _loginButtonController.reverse();
     } on TickerCanceled {}
   }
-  Future<String> RegisterUser(String username,String clave) async{
+  Future<String> registerUser(String username,String clave) async{
     Map<String, dynamic> body = {
       'username': username,
+      'password':clave,
       'fecha': dateString,
       'language':_poslang,
       'genero':dropdownValue,
@@ -116,7 +117,7 @@ class _signUpState extends State<SignUp> with TickerProviderStateMixin{
                   fontSize: 16.0);
             }
           }else{
-            RegisterUser(control_user.text, control_password.text).then((s){
+            registerUser(control_user.text, control_password.text).then((s){
               if(s!='EXISTS'){
                 if(s!="SOMETHING WENT WRONG"){//es el id
                   prefs.setString('idUser', s);

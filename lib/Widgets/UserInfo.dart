@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:insta_farma_app/Objects/Enfermedad.dart';
 import 'package:insta_farma_app/Resources/Colores/Colores.dart';
+import 'package:insta_farma_app/Strings/Strings.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserInformation extends StatefulWidget{
 
@@ -36,7 +38,7 @@ class UserInformation extends StatefulWidget{
       final key = new GlobalKey<ScaffoldState>();
       return new Scaffold(
           key: key,
-          floatingActionButton: _status ? _getEditIcon() : new Container(),
+          //floatingActionButton: _status ? _getEditIcon() : new Container(),
           appBar: AppBar(title: Text('Perfil'),backgroundColor: Colores.green1,),
           body: SafeArea(child: !isLoading? Container(
             color: Colors.white,
@@ -68,21 +70,6 @@ class UserInformation extends StatefulWidget{
                                 ],
                               ),
 
-                              Padding(
-                                  padding: EdgeInsets.only(top: 90.0, right: 100.0),
-                                  child: new Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      new CircleAvatar(
-                                        backgroundColor: Colors.red,
-                                        radius: 30,
-                                        child: new Icon(
-                                          Icons.camera_alt,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    ],
-                                  )),
                             ]),
                           ),
                           Padding(
@@ -218,14 +205,37 @@ class UserInformation extends StatefulWidget{
                                     ),
                                   ],
                                 )),
-                            !_status ? _getActionButtons() : new Container(),
+
+                            new Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Expanded(
+                                  child: Container(
+                                      child: new RaisedButton(
+                                        child: new Text("Cambiar clave"),
+                                        textColor: Colors.white,
+                                        color: Colors.green[700],
+                                        onPressed: () {
+                                          _launchURL();
+                                        },
+                                        shape: new RoundedRectangleBorder(
+                                            borderRadius: new BorderRadius.circular(20.0)),
+                                      )//border radius
+                                  ),//container
+                                  flex: 1,
+                                ),//expanded
+
+                              ],//children
+                            )//row
+
+                            //!_status ? _getActionButtons() : new Container(),
                           ],
                         ),
                       ),
                     )
                   ],
                 ),
-
               ],
             ),
           ): Center(child: CircularProgressIndicator(),),
@@ -340,6 +350,14 @@ class UserInformation extends StatefulWidget{
       control_user.dispose();
       control_password.dispose();
       super.dispose();
+    }
+    _launchURL() async {
+      var url = Strings.url+'/CambiarClave.php';
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        throw 'Could not launch $url';
+      }
     }
 
 
