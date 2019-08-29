@@ -4,4 +4,5 @@ class Colores{
 
   static Color green1=Colors.green[700];
   static Color green2=Colors.green[300];
+  static Color orange=Colors.red[300];
 }

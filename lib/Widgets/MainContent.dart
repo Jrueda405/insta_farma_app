@@ -15,27 +15,26 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-
 const List<Choice> choices = const <Choice>[
   const Choice(title: 'Cerrar Sesión', icon: MdiIcons.logout),
-
 ];
 
-class MainContent extends StatefulWidget{
+class MainContent extends StatefulWidget {
   /*List<Medicamento> my_meds;
   List<Medicamento> medicamentos;
   List<PrincipioActivo> pacs;*/
   int languagePos;
   String idUser;
-  MainContent({Key key,@required this.idUser,@required this.languagePos}):super(key:key);
+  MainContent({Key key, @required this.idUser, @required this.languagePos})
+      : super(key: key);
   @override
-  _MainContentState createState()=> _MainContentState();
+  _MainContentState createState() => _MainContentState();
 }
 
-class _MainContentState extends State<MainContent> with SingleTickerProviderStateMixin{
-
+class _MainContentState extends State<MainContent>
+    with SingleTickerProviderStateMixin {
   TabController _tabController;
-  Widget _appBarTitle = new Text( 'InstaFarma' );
+  Widget _appBarTitle = new Text('InstaFarma');
   Choice _selectedChoice = choices[0];
   List<Medicamento> my_meds;
   List<Medicamento> medicamentos;
@@ -50,33 +49,79 @@ class _MainContentState extends State<MainContent> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    languagePos=widget.languagePos;
-    idUser=widget.idUser;
+    languagePos = widget.languagePos;
+    idUser = widget.idUser;
     _tabController = new TabController(vsync: this, length: 3);
+    this.instantiatePrefs();
   }
-  void _select(Choice choice) async{
+  void instantiatePrefs() async{
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void _select(Choice choice) async {
     setState(() {
       _selectedChoice = choice;
     });
-    if(choice==choices[0]){//cerrar sesion
-      prefs = await SharedPreferences.getInstance();
-      prefs.setBool('isAuth', false);
-      prefs.setString('jsonmymeds', null);
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Lobby()));
+
+    if (choice == choices[0]) {
+      //cerrar sesion
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text("Estas a punto de cerrar sesión"),
+            content: new Text("¿Quieres cerrarla?"),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+              child: new Text("NO"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+              new FlatButton(
+                child: new Text("SI"),
+                onPressed: () {
+                  print("called close session");
+                  Navigator.of(context).pop();
+                  closeSession();
+                },
+              ),
+               
+            ],
+          );
+        },
+      );
     }
   }
+  void closeSession()async{
+    prefs.setBool('isAuth', false);
+                  prefs.setString('jsonmymeds', null);
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => Lobby()));
+                  Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar:(_buildBar(context)),
-      body: SafeArea(child: new TabBarView(
-        children: <Widget>[
-          MyMedsView(idUser: idUser,key: key,),
-          VistaMedicamentos(idUser: idUser,languagePos: languagePos,),
-          NewsView(),
-        ],
-        controller: _tabController,
-      ),
+      appBar: (_buildBar(context)),
+      body: SafeArea(
+        child: new TabBarView(
+          children: <Widget>[
+            MyMedsView(
+              idUser: idUser,
+              key: key,
+            ),
+            VistaMedicamentos(
+              idUser: idUser,
+              languagePos: languagePos,
+            ),
+            NewsView(),
+          ],
+          controller: _tabController,
+        ),
         bottom: true,
         left: true,
         right: true,
@@ -85,11 +130,13 @@ class _MainContentState extends State<MainContent> with SingleTickerProviderStat
       resizeToAvoidBottomPadding: false,
     );
   }
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
+
   Widget _buildBar(BuildContext context) {
     return new AppBar(
       title: _appBarTitle,
@@ -97,7 +144,7 @@ class _MainContentState extends State<MainContent> with SingleTickerProviderStat
       actions: <Widget>[
         GestureDetector(
           child: Icon(MdiIcons.faceProfile),
-          onTap: (){
+          onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => ViewUserProfile()),
@@ -116,7 +163,6 @@ class _MainContentState extends State<MainContent> with SingleTickerProviderStat
             }).toList();
           },
         ),
-
       ],
       bottom: new TabBar(
         indicatorColor: Colors.black,
@@ -138,7 +184,8 @@ class _MainContentState extends State<MainContent> with SingleTickerProviderStat
       ),
     );
   }
-  Future<bool> instantiateShared() async{
+
+  Future<bool> instantiateShared() async {
     prefs = await SharedPreferences.getInstance();
     return true;
   }

@@ -5,34 +5,35 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:insta_farma_app/Objects/Medicamento.dart';
 import 'package:insta_farma_app/Resources/Colores/Colores.dart';
 import 'package:insta_farma_app/Strings/Strings.dart';
 import 'package:insta_farma_app/Widgets/MainContent.dart';
+import 'package:insta_farma_app/Widgets/RetrievePassword.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Login extends StatefulWidget{
-
+class Login extends StatefulWidget {
   //Login({Key key,@required this.medicamentos});
   @override
-  _loginState createState()=> new _loginState();
+  _loginState createState() => new _loginState();
 }
-class _loginState extends State<Login> with TickerProviderStateMixin{
+
+class _loginState extends State<Login> with TickerProviderStateMixin {
   AnimationController _loginButtonController;
   var animationStatus = 0;
-  bool signed_up=false;
+  bool signed_up = false;
   final control_user = TextEditingController();
   final control_password = TextEditingController();
-  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0, color: Colors.black);
+  TextStyle style =
+      TextStyle(fontFamily: 'Montserrat', fontSize: 20.0, color: Colors.black);
   SharedPreferences prefs;
   String _username;
-  String _id="00000000000000000000";
-  int indexlang=0;
+  String _id = "00000000000000000000";
+  int indexlang = 0;
   @override
   void initState() {
     super.initState();
-    instantiateShared().whenComplete((){
-      indexlang= prefs.getInt('poslanguage') ?? 4;
+    instantiateShared().whenComplete(() {
+      indexlang = prefs.getInt('poslanguage') ?? 4;
     });
     //print(widget.medicamentos.length);
     _loginButtonController = new AnimationController(
@@ -51,7 +52,7 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Nombre de usuario",
           border:
-          OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
     final passwordField = TextField(
       obscureText: true,
@@ -61,7 +62,7 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
           contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
           hintText: "Clave",
           border:
-          OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
     );
     final loginButon = Material(
       elevation: 5.0,
@@ -72,16 +73,19 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         onPressed: () {
-          num codigo=num.tryParse(control_user.text);
-          if(codigo==null){
-            validateUserWithUsername(control_user.text,control_password.text).then((v){
-              if(v==true){
+          num codigo = num.tryParse(control_user.text);
+          if (codigo == null) {
+            validateUserWithUsername(control_user.text, control_password.text)
+                .then((v) {
+              if (v == true) {
                 prefs.setString('idUser', _id);
                 prefs.setString('username', control_user.text);
                 prefs.setString('password', control_password.text);
                 prefs.setBool('isAuth', true);
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainContent(idUser: _id,languagePos: indexlang)));
-              }else{
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) =>
+                        MainContent(idUser: _id, languagePos: indexlang)));
+              } else {
                 Fluttertoast.showToast(
                     msg: "Datos erroneos",
                     toastLength: Toast.LENGTH_SHORT,
@@ -91,17 +95,19 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
                     textColor: Colors.white,
                     fontSize: 16.0);
               }
-            }
-            );
-          }else{
-            validateUserWithId(control_user.text,control_password.text).then((v){
-              if(v==true){
+            });
+          } else {
+            validateUserWithId(control_user.text, control_password.text)
+                .then((v) {
+              if (v == true) {
                 prefs.setString('idUser', control_user.text);
                 prefs.setString('username', _username);
                 prefs.setString('password', control_password.text);
                 prefs.setBool('isAuth', true);
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => MainContent(idUser: control_user.text,languagePos: indexlang)));
-              }else{
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => MainContent(
+                        idUser: control_user.text, languagePos: indexlang)));
+              } else {
                 Fluttertoast.showToast(
                     msg: "Datos erroneos",
                     toastLength: Toast.LENGTH_SHORT,
@@ -111,10 +117,8 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
                     textColor: Colors.white,
                     fontSize: 16.0);
               }
-            }
-            );
+            });
           }
-
         },
         child: Text("Login",
             textAlign: TextAlign.center,
@@ -126,80 +130,101 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
       body: Center(
         child: Container(
             decoration: BoxDecoration(
-                color: Color.fromRGBO(255, 255, 255, 0.5),
+              color: Color.fromRGBO(255, 255, 255, 0.5),
             ),
-          child: Container(
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: ListView(
-                children: <Widget>[
-                  SizedBox(
-                    height: 155.0,
-                  ),
-                  SizedBox(height: 45.0),
-                  emailField,
-                  SizedBox(height: 25.0),
-                  passwordField,
-                  SizedBox(
-                    height: 35.0,
-                  ),
-                  loginButon,
-                  SizedBox(
-                    height: 15.0,
-                  ),
-                ],
+            child: Container(
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: ListView(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 155.0,
+                    ),
+                    SizedBox(height: 45.0),
+                    emailField,
+                    SizedBox(height: 25.0),
+                    passwordField,
+                    SizedBox(
+                      height: 35.0,
+                    ),
+                    GestureDetector(
+                      child: Text("¿Olvidaste la clave?",textAlign: TextAlign.center),
+                      onTap: () {
+                        //lanzar el widget de recuperar clave al correo
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) =>RetrievePassword()));
+                      }
+                    ),
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                    loginButon,
+                    SizedBox(
+                      height: 15.0,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          )
-        ),
+            )),
       ),
       resizeToAvoidBottomPadding: true,
     );
   }
 
-  Future<bool> validateUserWithId(String idUser,String clave) async{
+  Future<bool> validateUserWithId(String idUser, String clave) async {
     Map<String, dynamic> body = {
       'id': idUser,
-      'clave':clave,
+      'clave': clave,
     };
 
-    int start=(_id.length)-(idUser.length);
-    int end=_id.length;
-    _id=_id.replaceRange(start, end, idUser);
-    Response response = await Dio().post(Strings.url+"/ValidateUser.php",data:body, options: new Options(contentType:ContentType.parse("application/x-www-form-urlencoded")));
-    if(response.statusCode==200){
+    int start = (_id.length) - (idUser.length);
+    int end = _id.length;
+    _id = _id.replaceRange(start, end, idUser);
+    Response response = await Dio().post(Strings.url + "/ValidateUser.php",
+        data: body,
+        options: new Options(
+            contentType:
+                ContentType.parse("application/x-www-form-urlencoded")));
+    if (response.statusCode == 200) {
       //print(response.data);
-      if(response.data.toString().contains('OK')){
-        String temp=response.data.toString().split(':')[1];
+      if (response.data.toString().contains('OK')) {
+        String temp = response.data.toString().split(':')[1];
         //print("var temp"+temp);
         setState(() {
-          _username=temp;
+          _username = temp;
         });
         return true;
-      }else{
+      } else {
         return false;
       }
-    }else{return false;}
+    } else {
+      return false;
+    }
   }
 
-  Future<bool> validateUserWithUsername(String idUser,String clave) async{
+  Future<bool> validateUserWithUsername(String idUser, String clave) async {
     Map<String, dynamic> body = {
       'username': idUser,
-      'clave':clave,
+      'clave': clave,
     };
-    Response response = await Dio().post(Strings.url+"/ValidateUsername.php",data:body, options: new Options(contentType:ContentType.parse("application/x-www-form-urlencoded")));
-    if(response.statusCode==200){
+    Response response = await Dio().post(Strings.url + "/ValidateUsername.php",
+        data: body,
+        options: new Options(
+            contentType:
+                ContentType.parse("application/x-www-form-urlencoded")));
+    if (response.statusCode == 200) {
       //print(response.data);
-      if(response.data.toString().contains('OK')){
-        String temp=response.data.toString().split(':')[1];
+      if (response.data.toString().contains('OK')) {
+        String temp = response.data.toString().split(':')[1];
         setState(() {
-          _id=temp;
+          _id = temp;
         });
         return true;
-      }else{
+      } else {
         return false;
       }
-    }else{return false;}
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -209,7 +234,8 @@ class _loginState extends State<Login> with TickerProviderStateMixin{
     control_password.dispose();
     super.dispose();
   }
-  Future<bool> instantiateShared() async{
+
+  Future<bool> instantiateShared() async {
     prefs = await SharedPreferences.getInstance();
     return true;
   }
